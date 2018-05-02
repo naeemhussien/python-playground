@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def main():
-    df = pd.read_csv('/home/shahrin14/mysite/data/iris/iris.data',header=-1)
+    df = pd.read_csv('/home/shahrin14/python-playground/data/iris/iris.data',header=-1)
     col_name = ['sepal_length','sepal_width','petal_length','petal_width','class']
     df.columns = col_name
 
@@ -26,12 +26,12 @@ def main():
     labels=["Iris-setosa", "Iris-versicolor", "Iris-virginica"]
     plt.legend(handles, labels, loc=(1.02,0))
 
-    plt.savefig('/home/shahrin14/mysite/data/iris/pandas-scatter-plot.png')
+    plt.savefig('/home/shahrin14/python-playground/data/iris/pandas-scatter-plot.png')
     print ('Done...')
 
     print ('\n== Generating Histogram =   ===================================\n')
     df.hist(edgecolor='black',linewidth=1.2,figsize=(12,8))
-    plt.savefig('/home/shahrin14/mysite/data/iris/pandas-histogram.png')
+    plt.savefig('/home/shahrin14/python-playground/data/iris/pandas-histogram.png')
     print ('Done...')
 
 if __name__ == "__main__":
