@@ -1,0 +1,90 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+html, body, #mapid, .panel-container {
+  height:100%;
+  width:100%;
+  overflow:hidden;
+  margin: 0px;
+  font-family: Verdana;
+  font-size: 10px;
+  padding:0px;
+}
+.shadowed {
+    -webkit-filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.75));
+    /*filter: url(#drop-shadow);*/
+    -ms-filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=2, OffY=2, Color='#444')";
+    filter: "progid:DXImageTransform.Microsoft.Dropshadow(OffX=2, OffY=2, Color='#444')";
+}
+table,td,th {
+  border-collapse: collapse;
+  border: 1px solid black;
+  padding: 5px;
+}
+
+.r {
+  background-color:#ee4444;
+}
+.y {
+  background-color:#eeee44;
+}
+.g {
+  background-color:#44ee44;
+}
+
+.panel-container {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid silver;
+  overflow: hidden;
+  
+  /* avoid browser level touch actions */
+  xtouch-action: none;
+}
+.splitter {
+  flex: 0 0 auto;
+  width: 18px;  
+  background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
+  min-height: 200px;
+  cursor: col-resize;  
+}
+.panel-left {
+  width: 40%;
+  overflow: auto;
+}
+.panel-right {
+  flex: 1 1 auto;
+  /* resizable */
+  /* padding: 10px; */
+  ;
+  height: 100%;
+  min-height: 200px;
+  min-width: 200px;
+  background: #eee;
+}
+.padded {
+  padding: 10px;
+}
+
+#form-overlay {
+    padding: 1px;
+    position: fixed; /* Sit on top of the page content */
+    /*display: none; /* Hidden by default */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0; 
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ffffff;/*rgba(0,0,0,0.5); /* Black background with opacity */
+    z-index: 2000;/*2; /* Specify a stack order in case you're using a different order for other elements */
+    /*cursor: pointer; /* Add a pointer on hover */
+}
+
+.no-border {
+  border: 0px solid black;;
+}
+th.no-border {
+  text-align: left
+}
