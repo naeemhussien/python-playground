@@ -47,6 +47,14 @@ def send_static(path):
         path += "index.html"
     return send_from_directory('pages', path)
 
+@app.route('/data/<path:path>')
+def send_static_data(path):
+    if os.path.isdir('python-playground/data/'+path):
+        if not path.endswith('/'):
+            return redirect('/data/' + path + '/')
+        path += "index.html"
+    return send_from_directory('data', path)
+    
 @app.route('/echo')
 def echo():
     data = {}

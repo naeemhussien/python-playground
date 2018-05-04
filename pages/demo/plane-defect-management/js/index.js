@@ -9,62 +9,67 @@ MR2Data = MR2Data.map(function(data){
   data.DEFRERAL_TYPE = data.DEFRERAL_TYPE === "NIL" ? "" : data.DEFRERAL_TYPE;
   return data
 })
-var aircraftList = MR2Data.reduce(function(o,m){
-  o[m.ACREGN] = o[m.ACREGN] || {
-    ACREGN : m.ACREGN,
-    DEFECTS : [],
-    AIRPORT : getRandom(airports),
-    COLOR : '',
-    
-    //the following will be calculated
-    category : {
-      A : 0, B : 0, C : 0, D : 0
-    },
-    categoryMax : 0,
-    categoryMin : 0,
-    
-    mel : 0,
-    nonmel : 0,
-    melMax  : 0,
-    
-    varToHealthy : '-'
-  }
-  var obj = o[m.ACREGN]
-  
-  obj.heading = Math.floor(Math.random() * 360)
-  obj.coordinates = obj.AIRPORT.longitude_deg + "," + obj.AIRPORT.latitude_deg
-  obj.DEFECTS.push({DISC_DESC: m.DISC_DESC, DEFRERAL_TYPE: m.DEFRERAL_TYPE, DEFFERAL_CATEGORY : m.DEFFERAL_CATEGORY})
-  
-  if (m.DEFFERAL_CATEGORY) { 
-    obj.category[m.DEFFERAL_CATEGORY]++ 
-    obj.categoryMax = Math.max(obj.category.A,obj.category.B,obj.category.C,obj.category.D)    
-    obj.categoryMin = Math.min(obj.category.A,obj.category.B,obj.category.C,obj.category.D)
-  }
-  
-  if (m.DEFRERAL_TYPE) {
-    obj.mel++;
-  } else {
-    obj.nonmel++
-  }
-  obj.melMax = Math.max(obj.mel,obj.nonmel)
-  
-  if(obj.DEFECTS.length <= 6) {
-    obj.COLOR = 'g'
-  } else if (obj.DEFECTS.length <= 10) {
-    obj.COLOR = 'y'
-  } else {
-    obj.COLOR = 'r'
-  }
-  if(obj.DEFECTS.length-10<=0) {
-    obj.varToHealthy = "-"
-  } else {
-    obj.varToHealthy = "" + (obj.DEFECTS.length-10)
-  }
-  
-  return o
-},{})
+function getAircraftList() {
+  var aircraftList = MR2Data.reduce(function(o,m){
+    o[m.ACREGN] = o[m.ACREGN] || {
+      ACREGN : m.ACREGN,
+      DEFECTS : [],
+      AIRPORT : getRandom(airports),
+      COLOR : '',
 
-aircraftList = Object.keys(aircraftList).map(function(key){return aircraftList[key];})
+      //the following will be calculated
+      category : {
+        A : 0, B : 0, C : 0, D : 0
+      },
+      categoryMax : 0,
+      categoryMin : 0,
+
+      mel : 0,
+      nonmel : 0,
+      melMax  : 0,
+
+      varToHealthy : '-'
+    }
+    var obj = o[m.ACREGN]
+
+    obj.heading = Math.floor(Math.random() * 360)
+    obj.coordinates = obj.AIRPORT.longitude_deg + "," + obj.AIRPORT.latitude_deg
+    obj.DEFECTS.push({DISC_DESC: m.DISC_DESC, DEFRERAL_TYPE: m.DEFRERAL_TYPE, DEFFERAL_CATEGORY : m.DEFFERAL_CATEGORY})
+
+    if (m.DEFFERAL_CATEGORY) {
+      obj.category[m.DEFFERAL_CATEGORY]++
+      obj.categoryMax = Math.max(obj.category.A,obj.category.B,obj.category.C,obj.category.D)
+      obj.categoryMin = Math.min(obj.category.A,obj.category.B,obj.category.C,obj.category.D)
+    }
+
+    if (m.DEFRERAL_TYPE) {
+      obj.mel++;
+    } else {
+      obj.nonmel++
+    }
+    obj.melMax = Math.max(obj.mel,obj.nonmel)
+
+    if(obj.DEFECTS.length <= 6) {
+      obj.COLOR = 'g'
+    } else if (obj.DEFECTS.length <= 10) {
+      obj.COLOR = 'y'
+    } else {
+      obj.COLOR = 'r'
+    }
+    if(obj.DEFECTS.length-10<=0) {
+      obj.varToHealthy = "-"
+    } else {
+      obj.varToHealthy = "" + (obj.DEFECTS.length-10)
+    }
+
+    return o
+  },{})
+
+  aircraftList = Object.keys(aircraftList).map(function(key){return aircraftList[key];})
+  return aircraftList;
+}
+
+var aircraftList = getAircraftList();
 var map = L.map('mapid').setView([4,109.2], 6);
 
 //var tileLayerURL = 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png' //Humanitarian
@@ -76,29 +81,29 @@ L.tileLayer(tileLayerURL, {
 
 function getPopupHTML(data) {
   var categoryBarchart = data.categoryMax < 1 ? "" : "<img src=\"http://chart.googleapis.com/chart?" +
-    "cht=bvg&" + 
-    "chs=200x100&" + 
+    "cht=bvg&" +
+    "chs=200x100&" +
     "chd=t:"+Object.keys(data.category).map(function(key){return (data.category[key]/data.categoryMax)*100;}).join(",")+"&" +
     "chxl=1:|" + Object.keys(data.category).join("|")+ "|0:|0||"+Math.round((data.categoryMax/2)*10)/10+"||"+Math.round(data.categoryMax)+"&" +
     "chxt=y,x&" +
     "chco=FFC6A5|FFFF42|DEF3BD|00A5C6" +
-    //"chxs=0,ff0000,12,0,lt|1,0000ff,10,1,lt" + 
+    //"chxs=0,ff0000,12,0,lt|1,0000ff,10,1,lt" +
     "\"/><br/>";
-    
+
   var melBarchart = data.melMax < 1? "" : "<img src=\"http://chart.googleapis.com/chart?" +
-    "cht=bvg&" + 
-    "chs=200x100&" + 
+    "cht=bvg&" +
+    "chs=200x100&" +
     "chd=t:"+[data.mel,data.nonmel].map(function(d){return (d/data.melMax)*100;}).join(",")+"&" +
     "chxl=1:|MEL|Non-MEL|0:|0||"+Math.round((data.melMax/2)*10)/10+"||"+Math.round(data.melMax)+"&" +
     "chxt=y,x&" +
     "chco=ee4444|44ee44&" +
     "chbh=35,4,30" +
-    //"chxs=0,ff0000,12,0,lt|1,0000ff,10,1,lt" + 
+    //"chxs=0,ff0000,12,0,lt|1,0000ff,10,1,lt" +
     "\"/><br/>"
-  var html =  
+  var html =
     "<b>"+data.ACREGN+"</b><br/>" + categoryBarchart + "" + melBarchart +
     "<b>Location</b>&nbsp;" + data.AIRPORT.ident + "-" + data.AIRPORT.name
-  
+
   return html;
 }
 
@@ -110,7 +115,7 @@ function printKML() {
 $(".panel-left").resizable({
   handleSelector: ".splitter",
   resizeHeight: false,
-  
+
 });
 
 
@@ -120,7 +125,7 @@ mlApp.controller('mlController', ['$scope', function($scope) {
   $scope.resizeMap = function(){ map.invalidateSize();}
   $scope.mr2table = MR2Data;
   $scope.mr2summary = aircraftList
-  
+
   aircraftList.map(function(data){
     var coordinates = data.coordinates.split(",")
     var size = 40
@@ -139,42 +144,83 @@ mlApp.controller('mlController', ['$scope', function($scope) {
       rotationAngle: data.heading,
       title : data.name
     }).addTo(map);
-    
+
     var popupHTML = getPopupHTML(data)
     var popup = marker.bindPopup(popupHTML,{
       minWidth : 300
     })
     popup.aircraft = data
     popup.on('popupopen', function(e) {
-      $scope.mr2table = $scope.mr2table.filter(function(d){ return d.ACREGN == e.sourceTarget.aircraft.ACREGN })
-      $scope.mr2summary = $scope.mr2summary.filter(function(d){ return d.ACREGN == e.sourceTarget.aircraft.ACREGN })
-      $scope.$apply()
+      $scope.doDrilldown(e.sourceTarget.aircraft.ACREGN);
+      $scope.$apply();
     });
-    
+
     popup.on('popupclose', function(e) {
-      $scope.mr2table = MR2Data;
-      $scope.mr2summary = aircraftList;
-      $scope.$apply()
+      $scope.noDrilldown();
+      $scope.$apply();
     });
   })
 
+  /* Angular UI Specific functionality */
+  $scope.noDrilldown = function() {
+    $scope.mr2table = MR2Data;
+    $scope.mr2summary = aircraftList;
+  };
+  $scope.doDrilldown = function(ACREGN) {
+    $scope.mr2table = MR2Data.filter(function(d){ return d.ACREGN == ACREGN })
+    $scope.mr2summary = aircraftList.filter(function(d){ return d.ACREGN == ACREGN })
+
+  }
   $scope.changeFormMode = function() {
     $scope.formMode = !$scope.formMode
     document.getElementById("form-overlay").style.display = $scope.formMode ? "block" : "none";
   }
-  $scope.formMode = false;
-  $scope.changeFormMode()
-  
+  $scope.changeFormACRegn = function() {
+    $scope.mr2formtable = MR2Data.filter(function(d){ return d.ACREGN == $scope.formACRegn })
+    $scope.$apply();
+  }
+  $scope.submitForm = function() {
+    var newMr2Data = {
+      "ACREGN": $scope.formACRegn,
+      "DISCREPANCY#": "",
+      "DEFERRAL_AUTHORIZATION#": "",
+      "REPORTED_DATE": "",
+      "DISCREPANCY_TYPE": "",
+      "DEFRERAL_TYPE": "",
+      "DISC_DESC":$scope.formDefectDescription,
+      "DUE_DATE": "",
+      "REM_DAYS": 0,
+      "DEFFERAL_CATEGORY": "",
+      "DISCP_RECORD_STATUS": "",
+      "THRESHOLD_DATE": "",
+      "PART_NO_REQD": "",
+      "PART_SNO": "",
+      "PART_DESC": "",
+      "BAL_AVAILABLE_QTY": "",
+      "BAL_HARD_ALLOC_QTY": "",
+      "BAL_WAREHOUSE_ID": "",
+      "DISC_REMARKS": "",
+      "CABIN": ""
+    };
+    $scope.formACRegn = "";
+    $scope.formDefectDescription = "";
+    $scope.mr2formtable = []
+    MR2Data.push(newMr2Data);
+    aircraftList = getAircraftList();
+  }
+  $scope.formMode = true;
+  document.getElementById("form-overlay").style.display = $scope.formMode ? "block" : "none";
+
   map.invalidateSize();
-  
+
   /* Machine Learning Section */
   $scope.classifier = new BayesClassifier();
-    
+
   ['Yes','No'].map(function(cabin){
     var documents = MR2Data.filter(function(data){return cabin === "Yes" ? data.CABIN === "CABIN" : data.CABIN === "";}).map(function(d){return d.DISC_DESC})
     $scope.classifier.addDocuments(documents, cabin)
   })
-  
+
   $scope.classifier.train()
   $scope.performBayes = function(input) {
     $scope.formCabin = $scope.classifier.classify(input)
@@ -185,5 +231,5 @@ mlApp.controller('mlController', ['$scope', function($scope) {
   $scope.isCurrentCategory = function(val) {
     return $scope.formCategory === val;
   }
-  
+
 }])

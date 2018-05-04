@@ -38,16 +38,16 @@ table,td,th {
   flex-direction: row;
   border: 1px solid silver;
   overflow: hidden;
-  
+
   /* avoid browser level touch actions */
   xtouch-action: none;
 }
 .splitter {
   flex: 0 0 auto;
-  width: 18px;  
+  width: 18px;
   background: url(https://raw.githubusercontent.com/RickStrahl/jquery-resizable/master/assets/vsizegrip.png) center center no-repeat #535353;
   min-height: 200px;
-  cursor: col-resize;  
+  cursor: col-resize;
 }
 .panel-left {
   width: 40%;
@@ -73,7 +73,8 @@ table,td,th {
     /*display: none; /* Hidden by default */
     width: 100%; /* Full width (cover the whole page) */
     height: 100%; /* Full height (cover the whole page) */
-    top: 0; 
+    overflow: auto;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
